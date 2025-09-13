@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Java Interview Trainer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <h1>Java Interview Trainer</h1>
+    <nav aria-label="Main navigation">
+      <button class="tab-btn active" data-mode="flashcards">Flashcards</button>
+      <button class="tab-btn" data-mode="quiz">Quiz</button>
+      <button class="tab-btn" data-mode="mock">Mock Interview</button>
+    </nav>
+    <div class="actions">
+      <button id="exportProgress" title="Export Progress (JSON)">Export</button>
+      <label class="import-label">
+        Import
+        <input id="importProgress" type="file" accept="application/json" />
+      </label>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" aria-label="Filters">
+      <h2>Topics</h2>
+      <div id="topicFilters" class="filters">
+        <!-- Filled by JS -->
+      </div>
+      <div class="controls">
+        <button id="shuffleBtn">Shuffle</button>
+        <button id="resetProgressBtn">Reset Progress</button>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div><span id="statTotal">0</span> questions</div>
+        <div>Due: <span id="statDue">0</span></div>
+        <div>Avg Score: <span id="statAvg">0</span></div>
+      </div>
+      <div class="hint">
+        Shortcuts:
+        <ul>
+          <li>Space — show answer</li>
+          <li>1..5 — grade answer</li>
+          <li>N — next</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main id="app" class="main" role="main" aria-live="polite">
+      <section id="flashcardsView" class="view">
+        <div class="card">
+          <div class="q" id="fcQuestion"></div>
+          <div class="a" id="fcAnswer" hidden></div>
+          <div class="tags" id="fcTags"></div>
+          <div class="card-actions">
+            <button id="showAnswerBtn">Show Answer</button>
+            <div class="grade">
+              Grade: 
+              <button class="g" data-g="1">1</button>
+              <button class="g" data-g="2">2</button>
+              <button class="g" data-g="3">3</button>
+              <button class="g" data-g="4">4</button>
+              <button class="g" data-g="5">5</button>
+            </div>
+            <button id="nextCardBtn">Next</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="quizView" class="view" hidden>
+        <div class="card">
+          <div class="q" id="quizQuestion"></div>
+          <ul id="quizOptions" class="options"></ul>
+          <div class="feedback" id="quizFeedback" aria-live="polite"></div>
+          <div class="card-actions">
+            <button id="quizNextBtn" disabled>Next</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="mockView" class="view" hidden>
+        <div class="card">
+          <div class="q" id="mockQuestion"></div>
+          <div class="timer" id="mockTimer" aria-live="polite">02:00</div>
+          <textarea id="mockNotes" placeholder="Brief answer plan (using STAR/structure)"></textarea>
+          <details class="suggestion">
+            <summary>Show example answer</summary>
+            <div id="mockAnswer"></div>
+          </details>
+          <div class="card-actions">
+            <button id="mockRestart">Reset Timer</button>
+            <div class="grade">
+              Grade:
+              <button class="g" data-g="1">1</button>
+              <button class="g" data-g="2">2</button>
+              <button class="g" data-g="3">3</button>
+              <button class="g" data-g="4">4</button>
+              <button class="g" data-g="5">5</button>
+            </div>
+            <button id="mockNextBtn">Next</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "app": "./js/app.js",
+      "questions": "./js/questions.js",
+      "utils": "./js/utils.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import "./js/app.js";
+  </script>
+</body>
+</html>
+
