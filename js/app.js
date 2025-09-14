@@ -90,7 +90,7 @@ function applyFilters() {
   state.filtered = QUESTIONS.filter(q => selected.has(q.topic));
   state.order = state.filtered.map((_, i) => i);
   renderStats();
-  resetMode(true);
+  resetMode(false);
 }
 
 /* Stats */
@@ -305,6 +305,7 @@ function initUI() {
     a.download = `jit-progress-${todayKey()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
+    console.log("Progress exported successfully.");
   });
   document.getElementById("importProgress").addEventListener("change", async (e) => {
     const file = e.target.files?.[0]; if (!file) return;
