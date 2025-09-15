@@ -155,7 +155,9 @@ let quizAnswered = false;
 function renderQuiz() {
   const q = currentQuestion();
   if (!q) { els.quiz.q.textContent = "No questions."; return; }
+  // Ensure the question has 4 options, generating them if necessary
   const mcq = q.type === "mcq" ? q : toGeneratedMCQ(q);
+
   els.quiz.q.textContent = mcq.q;
   els.quiz.opts.innerHTML = "";
   quizAnswered = false;
@@ -240,21 +242,45 @@ function goNext() {
 }
 
 function toGeneratedMCQ(q) {
-  // Generate a simple MCQ from open question bullets (not perfect, but useful)
+  // Generate a simple MCQ from open question bullets, ensuring exactly 4 options.
   const correct = (q.a && q.a[0]) ? q.a[0] : "Correct option";
-  const distractors = shuffle(
-    QUESTIONS.filter(x => x.topic === q.topic && x.id !== q.id && x.type === "open")
-      .flatMap(x => x.a?.slice(0,1) || [])
-  ).slice(0,3);
-  const options = shuffle([correct, ...distractors]);
-  const answer = options.indexOf(correct);
+
+  // Collect potential distractors from other open questions in the same topic.
+  // Ensure distractors are unique and not the same as the correct answer.
+  let potentialDistractors = QUESTIONS.filter(x =>
+    x.topic === q.topic && x.id !== q.id && x.type === "open"
+  ).flatMap(x => x.a?.slice(0, 1) || [])
+   .filter(d => d !== correct);
+
+  // Take up to 3 unique distractors
+  const distractors = shuffle(potentialDistractors).slice(0, 3);
+
+  let options = [correct, ...distractors];
+
+  // If we have less than 4 options, add generic ones
+  let genericOptionCounter = 1;
+  while (options.length < 4) {
+    let genericOption = `Another option ${genericOptionCounter}`;
+    // Ensure generic options are also unique within the current set
+    while (options.includes(genericOption)) {
+      genericOptionCounter++;
+      genericOption = `Another option ${genericOptionCounter}`;
+    }
+    options.push(genericOption);
+    genericOptionCounter++;
+  }
+
+  // Shuffle all options to randomize their positions
+  const finalOptions = shuffle(options);
+  const answerIndex = finalOptions.indexOf(correct);
+
   return {
     id: q.id + "-gen",
     topic: q.topic,
     type: "mcq",
     q: q.q,
-    options,
-    answer,
+    options: finalOptions,
+    answer: answerIndex,
     explain: "Generated from card; check phrasing."
   };
 }
