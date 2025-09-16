@@ -8,7 +8,9 @@ const state = {
   currentIdx: 0,
   order: [],
   timerId: null,
-  mockSeconds: 120
+  mockSeconds: 120,
+  quizCorrectCount: 0, // New: Counter for correct answers in quiz
+  quizWrongCount: 0    // New: Counter for wrong answers in quiz
 };
 
 const els = {
@@ -35,7 +37,9 @@ const els = {
     q: document.getElementById("quizQuestion"),
     opts: document.getElementById("quizOptions"),
     feedback: document.getElementById("quizFeedback"),
-    next: document.getElementById("quizNextBtn")
+    next: document.getElementById("quizNextBtn"),
+    quizCorrectCount: document.getElementById("quizCorrectCount"), // New element reference
+    quizWrongCount: document.getElementById("quizWrongCount")     // New element reference
   },
   mock: {
     q: document.getElementById("mockQuestion"),
@@ -109,6 +113,13 @@ function switchMode(to) {
   state.mode = to;
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.mode === to));
   Object.entries(els.views).forEach(([k, el]) => el.hidden = (k !== to));
+
+  // Reset quiz counters when entering quiz mode
+  if (to === "quiz") {
+    state.quizCorrectCount = 0;
+    state.quizWrongCount = 0;
+  }
+
   resetMode(false);
 }
 
@@ -163,6 +174,9 @@ function renderQuiz() {
   quizAnswered = false;
   els.quiz.feedback.textContent = "";
   els.quiz.next.disabled = true;
+
+  updateQuizCountersDisplay(); // Update display with current counts
+
   const options = shuffle(mcq.options.map((t, i) => ({ t, i })));
   options.forEach(({ t, i }) => {
     const li = document.createElement("li");
@@ -180,7 +194,25 @@ function choose(correct, el, mcq) {
   el.classList.add(correct ? "correct" : "wrong");
   els.quiz.feedback.textContent = correct ? "Correct!" : `Incorrect. ${mcq.explain || ""}`;
   updateProgress(mcq.id, correct ? 5 : 2);
+
+  if (correct) {
+    state.quizCorrectCount++;
+  } else {
+    state.quizWrongCount++;
+  }
+  updateQuizCountersDisplay(); // Update counts display after choice
+
   els.quiz.next.disabled = false;
+}
+
+// New: Function to update the quiz counters in the UI
+function updateQuizCountersDisplay() {
+  if (els.quiz.quizCorrectCount) {
+    els.quiz.quizCorrectCount.textContent = state.quizCorrectCount;
+  }
+  if (els.quiz.quizWrongCount) {
+    els.quiz.quizWrongCount.textContent = state.quizWrongCount;
+  }
 }
 
 /* Mock interview */

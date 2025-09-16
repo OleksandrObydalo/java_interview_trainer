@@ -240,6 +240,26 @@ button:focus-visible, .tab-btn:focus-visible, .import-label:focus-within {
   margin-bottom: 4px;
 }
 
+/* Quiz stats */
+.quiz-stats {
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--fg);
+  font-weight: 600;
+  display: flex;
+  gap: 15px;
+}
+.quiz-stats span {
+  font-weight: 700;
+  color: var(--muted); /* Default for numbers */
+}
+.quiz-stats #quizCorrectCount {
+  color: var(--good);
+}
+.quiz-stats #quizWrongCount {
+  color: var(--bad);
+}
+
 /* Main content area */
 .main {
   padding:30px; /* Increased padding */
